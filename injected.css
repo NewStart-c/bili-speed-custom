@@ -1,0 +1,34 @@
+/* 自定义预设项：与原生菜单风格对齐 */
+.custom-speed-item {
+  /* B站原生菜单项已有基础样式，这里只做微调 */
+}
+
+/* 输入框容器 */
+.custom-speed-input-wrap {
+  padding: 6px 12px;
+  list-style: none;
+}
+
+.custom-speed-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #222;
+  color: #eee;
+  font-size: 13px;
+  outline: none;
+}
+
+.custom-speed-input:focus {
+  border-color: #00a1d6;
+  /* B站蓝 */
+}
+
+/* 隐藏 number 输入框的上下箭头，视觉更干净 */
+.custom-speed-input::-webkit-inner-spin-button,
+.custom-speed-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

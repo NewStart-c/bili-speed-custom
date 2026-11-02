@@ -1,0 +1,161 @@
+(() => {
+  'use strict';
+
+  const STORAGE_KEY = 'bili_global_speed';
+  const PRESETS = [2.5, 3, 3.5, 4]; // 原生菜单之外的额外预设
+  const MIN_RATE = 0.0625;
+  const MAX_RATE = 16;
+
+  let currentVideo = null;
+  let observer = null;
+
+  // ---------- 读取持久化倍速 ----------
+  async function getSavedSpeed() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get([STORAGE_KEY], (result) => {
+        resolve(result[STORAGE_KEY] || null);
+      });
+    });
+  }
+
+  async function saveSpeed(rate) {
+    const clamped = Math.min(MAX_RATE, Math.max(MIN_RATE, Number(rate)));
+    return new Promise((resolve) => {
+      chrome.storage.local.set({ [STORAGE_KEY]: clamped }, resolve);
+    });
+  }
+
+  // ---------- 应用倍速到 video ----------
+  function applyRate(rate) {
+    if (!currentVideo) return;
+    const clamped = Math.min(MAX_RATE, Math.max(MIN_RATE, Number(rate)));
+    try {
+      currentVideo.playbackRate = clamped;
+    } catch (e) {
+      // 某些情况下赋值可能失败，静默忽略
+    }
+    syncNativeLabel(clamped);
+    saveSpeed(clamped);
+  }
+
+  // ---------- 同步 B 站原生倍速显示文字 ----------
+  function syncNativeLabel(rate) {
+    const resultEl = document.querySelector('.bpx-player-ctrl-playbackrate-result');
+    if (resultEl) {
+      resultEl.innerText = `${rate}x`;
+    }
+  }
+
+  // ---------- 注入预设项与输入框到原生菜单 ----------
+  function injectMenuItems() {
+    const menu = document.querySelector('.bpx-player-ctrl-playbackrate-menu');
+    if (!menu || menu.dataset.customInjected) return;
+    menu.dataset.customInjected = 'true';
+
+    // 追加固定预设
+    PRESETS.forEach((rate) => {
+      const li = document.createElement('li');
+      li.className = 'bpx-player-ctrl-playbackrate-menu-item custom-speed-item';
+      li.dataset.value = rate;
+      li.innerText = `${rate}x`;
+      li.addEventListener('click', (e) => {
+        e.stopPropagation();
+        applyRate(rate);
+        closeMenu();
+      });
+      menu.appendChild(li);
+    });
+
+    // 追加输入框
+    const inputWrap = document.createElement('li');
+    inputWrap.className = 'custom-speed-input-wrap';
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = MIN_RATE;
+    input.max = MAX_RATE;
+    input.step = '0.1';
+    input.placeholder = '输入倍速';
+    input.className = 'custom-speed-input';
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+        const val = parseFloat(input.value);
+        if (!isNaN(val)) {
+          applyRate(val);
+          closeMenu();
+        }
+      }
+      // 防止快捷键在输入框内触发
+      e.stopPropagation();
+    });
+    input.addEventListener('click', (e) => e.stopPropagation());
+    inputWrap.appendChild(input);
+    menu.appendChild(inputWrap);
+  }
+
+  function closeMenu() {
+    const menu = document.querySelector('.bpx-player-ctrl-playbackrate-menu');
+    if (menu) menu.style.display = 'none';
+  }
+
+  // ---------- 快捷键 Shift+1 / 2 / 3 ----------
+  document.addEventListener('keydown', (e) => {
+    // 输入框聚焦时禁用快捷键
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (!e.shiftKey) return;
+
+    const keyMap = { '!': 1, '@': 2, '#': 3 }; // Shift+1/2/3 产生的字符
+    const rate = keyMap[e.key];
+    if (rate !== undefined) {
+      e.preventDefault();
+      e.stopPropagation();
+      applyRate(rate);
+    }
+  }, true);
+
+  // ---------- 监听 video 元素变化（SPA 兼容） ----------
+  function watchVideo() {
+    if (observer) observer.disconnect();
+
+    observer = new MutationObserver(() => {
+      const video = document.querySelector('video');
+      if (video && video !== currentVideo) {
+        currentVideo = video;
+        // 等待元数据加载后再应用保存的倍速
+        if (video.readyState >= 1) {
+          const saved = getSavedSpeed();
+          saved.then((rate) => { if (rate) applyRate(rate); });
+        } else {
+          video.addEventListener('loadedmetadata', () => {
+            getSavedSpeed().then((rate) => { if (rate) applyRate(rate); });
+          }, { once: true });
+        }
+      }
+
+      // 菜单可能出现/重建，重新注入
+      injectMenuItems();
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // ---------- 初始应用 + 启动监听 ----------
+  async function init() {
+    const saved = await getSavedSpeed();
+    const video = document.querySelector('video');
+    if (video) {
+      currentVideo = video;
+      if (saved) applyRate(saved);
+    }
+    watchVideo();
+    injectMenuItems();
+  }
+
+  // 等待页面基本就绪
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

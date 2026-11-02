@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>生成扩展图标</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            padding: 24px;
+            background: #f5f5f5;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            background: #00AEEC;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0095cc;
+        }
+
+        p {
+            color: #444;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>B站自定义倍速 · 图标生成</h2>
+    <p>点击下方按钮，浏览器会依次下载 icon16.png / icon48.png / icon128.png。<br>
+        如果 Edge 提示"允许此站点下载多个文件"，点<strong>允许</strong>。</p>
+    <button id="gen">生成并下载三个尺寸</button>
+
+    <script>
+        const SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#00AEEC"/>
+          <stop offset="1" stop-color="#0066CC"/>
+        </linearGradient>
+      </defs>
+      <rect width="128" height="128" rx="28" ry="28" fill="url(#g)"/>
+      <path d="M24 36 L62 64 L24 92 Z" fill="#ffffff"/>
+      <path d="M66 36 L104 64 L66 92 Z" fill="#ffffff"/>
+    </svg>`;
+
+        const SIZES = [16, 48, 128];
+
+        function loadSvg() {
+            return new Promise((resolve) => {
+                const blob = new Blob([SVG], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const img = new Image();
+                img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+                img.src = url;
+            });
+        }
+
+        function render(img, size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = canvas.height = size;
+            canvas.getContext('2d').drawImage(img, 0, 0, size, size);
+            return canvas;
+        }
+
+        function download(canvas, name) {
+            canvas.toBlob((blob) => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = name;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+            }, 'image/png');
+        }
+
+        document.getElementById('gen').addEventListener('click', async () => {
+            const img = await loadSvg();
+            SIZES.forEach((s, i) => {
+                // 依次延迟，避免被浏览器合并/拦截
+                setTimeout(() => download(render(img, s), `icon${s}.png`), i * 300);
+            });
+        });
+    </script>
+</body>
+
+</html>
