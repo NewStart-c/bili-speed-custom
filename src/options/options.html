@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>B站自定义倍速 · 设置</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <header class="page-header">
+        <img src="icons/icon48.png" alt="" width="40" height="40">
+        <div>
+            <h1>B站自定义倍速</h1>
+            <p>自定义预设、默认倍速与数据管理。设置仅保存在本地浏览器中。</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>常规</h2>
+
+            <label class="field field-check">
+                <input id="enabled" type="checkbox">
+                <span>启用扩展</span>
+            </label>
+
+            <label class="field">
+                <span>默认倍速</span>
+                <input id="defaultRate" type="text" inputmode="decimal" autocomplete="off" spellcheck="false">
+            </label>
+            <p class="hint">打开新视频时使用。当前版本为全局记忆；按视频 / 分 P / UP 记忆将在后续版本提供。</p>
+
+            <label class="field">
+                <span>微调步长</span>
+                <input id="step" type="text" inputmode="decimal" autocomplete="off" spellcheck="false">
+            </label>
+            <p class="hint">菜单中 − / + 按钮每次调整的幅度，范围 0.05–1。</p>
+        </section>
+
+        <section class="card">
+            <h2>自定义预设</h2>
+            <p class="hint">预设会出现在 B 站原生倍速菜单和 Popup 中，最多 12 个，至少保留 1 个。</p>
+            <ul id="presetList" class="preset-list"></ul>
+
+            <form id="presetForm" class="add-preset" novalidate>
+                <input id="newPreset" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"
+                    placeholder="输入新预设，例如 2.75" aria-label="新预设倍速">
+                <button type="submit" class="secondary">添加</button>
+            </form>
+            <p id="presetFeedback" class="feedback" role="alert"></p>
+        </section>
+
+        <section class="card">
+            <h2>数据</h2>
+            <div class="data-actions">
+                <button id="export" type="button" class="secondary">导出设置</button>
+                <label class="file-button">
+                    导入设置
+                    <input id="import" type="file" accept="application/json,.json">
+                </label>
+                <button id="reset" type="button" class="danger">恢复默认</button>
+            </div>
+            <p class="hint">导出的 JSON 包含预设、默认倍速和开关状态，不包含任何浏览记录。</p>
+        </section>
+
+        <div class="save-bar">
+            <span id="saveStatus" class="save-status" role="status"></span>
+            <button id="save" type="button" class="primary">保存设置</button>
+        </div>
+
+        <p class="footer">版本 <span id="version"></span> · 开源地址：github.com/NewStart-c/bili-speed-custom</p>
+    </main>
+
+    <script type="module" src="options.js"></script>
+</body>
+</html>

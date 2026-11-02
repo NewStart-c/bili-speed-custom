@@ -1,34 +1,101 @@
-/* 自定义预设项：与原生菜单风格对齐 */
+/* 自定义预设项：沿用 B 站原生菜单项样式，仅补一个可访问性焦点态 */
 .custom-speed-item {
-  /* B站原生菜单项已有基础样式，这里只做微调 */
+    cursor: pointer;
 }
 
-/* 输入框容器 */
+.custom-speed-item:focus-visible,
+.custom-speed-step:focus-visible,
+.custom-speed-reset:focus-visible,
+.custom-speed-input:focus-visible {
+    outline: 2px solid #00aeec;
+    outline-offset: -2px;
+}
+
+/* 兜底隐藏：只在原生类不生效时临时使用，用户再次操作控件时会被移除 */
+.bpx-player-ctrl-playbackrate-menu.custom-speed-hidden {
+    display: none !important;
+}
+
+/* 输入区：吸底，避免倍速项过多时被挤到菜单外 */
 .custom-speed-input-wrap {
-  padding: 6px 12px;
-  list-style: none;
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    min-width: 176px;
+    padding: 8px 10px 9px;
+    list-style: none;
+    background: #252525;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.custom-speed-input-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 28px 40px;
+    align-items: center;
+    gap: 5px;
 }
 
 .custom-speed-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 4px 8px;
-  border: 1px solid #555;
-  border-radius: 4px;
-  background: #222;
-  color: #eee;
-  font-size: 13px;
-  outline: none;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 5px 7px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background: #1c1c1c;
+    color: #eee;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    outline: none;
+}
+
+.custom-speed-input::placeholder {
+    color: #8a8a8a;
 }
 
 .custom-speed-input:focus {
-  border-color: #00a1d6;
-  /* B站蓝 */
+    border-color: #00a1d6;
 }
 
-/* 隐藏 number 输入框的上下箭头，视觉更干净 */
-.custom-speed-input::-webkit-inner-spin-button,
-.custom-speed-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.custom-speed-invalid {
+    border-color: #ff6699 !important;
+}
+
+.custom-speed-step,
+.custom-speed-reset {
+    height: 28px;
+    padding: 0;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background: #303030;
+    color: #eee;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.custom-speed-step:hover,
+.custom-speed-reset:hover {
+    border-color: #00a1d6;
+    color: #00a1d6;
+}
+
+.custom-speed-reset {
+    font-size: 12px;
+}
+
+.custom-speed-feedback {
+    display: block;
+    height: 14px;
+    margin-top: 3px;
+    color: #ffb3c7;
+    font-size: 11px;
+    line-height: 14px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.custom-speed-feedback.visible {
+    opacity: 1;
 }

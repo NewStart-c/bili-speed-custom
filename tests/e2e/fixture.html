@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>Bilibili player fixture</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: #eee;
+            font: 14px/1.5 system-ui, sans-serif;
+        }
+
+        .bpx-player-container {
+            position: relative;
+            width: 640px;
+            height: 360px;
+            margin: 40px auto;
+            background: #000;
+        }
+
+        .bpx-player-video-wrap {
+            width: 100%;
+            height: 100%;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            background: #141414;
+        }
+
+        .bpx-player-ctrl-playbackrate {
+            position: absolute;
+            right: 16px;
+            bottom: 48px;
+        }
+
+        .bpx-player-ctrl-playbackrate-result {
+            padding: 6px 10px;
+            border-radius: 4px;
+            background: #222;
+            cursor: pointer;
+        }
+
+        .bpx-player-ctrl-playbackrate-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            bottom: 100%;
+            width: 190px;
+            margin: 0 0 6px;
+            padding: 4px 0;
+            border-radius: 6px;
+            background: #252525;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .bpx-player-ctrl-playbackrate.bpx-state-show .bpx-player-ctrl-playbackrate-menu {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bpx-player-ctrl-playbackrate-menu-item {
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+
+        .bpx-player-ctrl-playbackrate-menu-item:hover,
+        .bpx-player-ctrl-playbackrate-menu-item.bpx-state-active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="bpx-player-container">
+        <div class="bpx-player-video-wrap">
+            <video id="video"></video>
+        </div>
+
+        <div class="bpx-player-ctrl-playbackrate" id="rateControl">
+            <div class="bpx-player-ctrl-playbackrate-result" role="button" aria-label="倍速">倍速</div>
+            <ul class="bpx-player-ctrl-playbackrate-menu" id="rateMenu">
+                <li class="bpx-player-ctrl-playbackrate-menu-item bpx-state-active" data-value="1">1.0x</li>
+                <li class="bpx-player-ctrl-playbackrate-menu-item" data-value="1.25">1.25x</li>
+                <li class="bpx-player-ctrl-playbackrate-menu-item" data-value="1.5">1.5x</li>
+                <li class="bpx-player-ctrl-playbackrate-menu-item" data-value="2">2.0x</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+
+        // 模拟 B 站原生菜单：点击原生项时修改 video.playbackRate
+        document.querySelectorAll('#rateMenu > .bpx-player-ctrl-playbackrate-menu-item').forEach((item) => {
+            item.addEventListener('click', () => {
+                video.playbackRate = Number(item.dataset.value);
+            });
+        });
+
+        // 模拟 B 站 SPA 切换视频：替换 video 元素并更新 URL
+        window.__swapVideo = (url) => {
+            history.pushState({}, '', url);
+            const next = document.createElement('video');
+            next.id = 'video';
+            video.replaceWith(next);
+        };
+    </script>
+</body>
+</html>

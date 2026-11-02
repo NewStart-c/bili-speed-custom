@@ -1,0 +1,30 @@
+{
+  "name": "bili-speed-custom",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "为 B 站播放器添加自定义倍速预设、任意数值输入与快捷键，并全局记忆播放速度。",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test": "npm run test:unit",
+    "package": "npm run build && node scripts/package.mjs",
+    "verify": "npm run typecheck && npm run test:unit && npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/archiver": "^8.0.0",
+    "@types/chrome": "^0.3.7",
+    "@types/node": "^26.6.6",
+    "archiver": "^8.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

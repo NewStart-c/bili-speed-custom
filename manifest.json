@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "B站自定义倍速",
-    "version": "1.0.1",
+    "version": "0.0.0",
     "description": "为B站播放器添加自定义倍速预设、任意输入与快捷键，并全局记忆。",
     "permissions": [
         "storage"
@@ -9,6 +9,22 @@
     "host_permissions": [
         "*://www.bilibili.com/*"
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "B站自定义倍速",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "options_ui": {
+        "page": "options.html",
+        "open_in_tab": true
+    },
     "content_scripts": [
         {
             "matches": [

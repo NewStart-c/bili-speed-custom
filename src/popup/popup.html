@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>B站自定义倍速</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <header class="header">
+        <img src="icons/icon48.png" alt="" width="32" height="32">
+        <div class="header-text">
+            <h1>B站自定义倍速</h1>
+            <p id="pageStatus" class="status">正在读取当前页面…</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="current" aria-live="polite">
+            <span class="current-label">当前倍速</span>
+            <strong id="currentRate">1.0x</strong>
+        </section>
+
+        <div id="presets" class="presets" role="group" aria-label="快捷倍速"></div>
+
+        <form id="rateForm" class="rate-form" novalidate>
+            <input id="rateInput" type="text" inputmode="decimal" autocomplete="off" spellcheck="false"
+                placeholder="自定义倍速" aria-label="自定义播放倍速">
+            <button type="submit">应用</button>
+        </form>
+
+        <p id="feedback" class="feedback" role="alert"></p>
+
+        <div class="actions">
+            <button id="reset" type="button" class="secondary">恢复 1x</button>
+            <label class="toggle">
+                <input id="enabled" type="checkbox">
+                <span>启用扩展</span>
+            </label>
+        </div>
+
+        <button id="openOptions" type="button" class="link">打开设置</button>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+</body>
+</html>
